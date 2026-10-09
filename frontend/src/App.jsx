@@ -10,7 +10,7 @@ import SettingsModal from './components/SettingsModal';
 import PitchModal from './components/PitchModal';
 import { AlertCircle } from 'lucide-react';
 
-const API_BASE = 'http://127.0.0.1:8000';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://127.0.0.1:8000';
 
 const FALLBACK_SAMPLES = [
   {
