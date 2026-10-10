@@ -4,8 +4,19 @@ import { Compass, Sparkles } from 'lucide-react';
 export default function ViabilityScorecard({ viability, coreOpportunity, executiveSummary, domain }) {
   if (!viability) return null;
 
-  const score = viability.overall;
+  const clamp = (val) => {
+    const num = Number(val);
+    if (isNaN(num)) return 0;
+    return Math.min(Math.max(Math.round(num), 0), 100);
+  };
+
+  const score = clamp(viability.overall);
   const scoreColor = score >= 80 ? '#34d399' : score >= 65 ? '#22d3ee' : '#fbbf24';
+
+  const marketDemand = clamp(viability.market_demand);
+  const differentiation = clamp(viability.differentiation_potential);
+  const techFeasibility = clamp(viability.tech_feasibility);
+  const competitorSaturation = clamp(viability.competitor_saturation);
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px', marginBottom: '36px' }}>
@@ -40,7 +51,8 @@ export default function ViabilityScorecard({ viability, coreOpportunity, executi
               alignItems: 'center',
               justifyContent: 'center',
               background: `conic-gradient(${scoreColor} ${score * 3.6}deg, rgba(255, 255, 255, 0.08) 0deg)`,
-              boxShadow: `0 0 25px ${scoreColor}40`
+              boxShadow: `0 0 25px ${scoreColor}40`,
+              transition: 'all 0.5s ease'
             }}>
               <div style={{
                 width: '82px',
@@ -61,10 +73,10 @@ export default function ViabilityScorecard({ viability, coreOpportunity, executi
 
             <div>
               <div style={{ fontSize: '1.15rem', fontWeight: '700', color: '#ffffff', marginBottom: '4px' }}>
-                {viability.verdict}
+                {viability.verdict || "Evaluated Opportunity"}
               </div>
               <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
-                {viability.rationale}
+                {viability.rationale || "Calculated across market demand velocity, competitive saturation, technical feasibility, and differentiation potential."}
               </p>
             </div>
           </div>
@@ -76,40 +88,40 @@ export default function ViabilityScorecard({ viability, coreOpportunity, executi
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '4px' }}>
                 <span style={{ color: 'var(--text-secondary)' }}>Market Demand</span>
-                <span style={{ fontWeight: '600', color: '#22d3ee' }}>{viability.market_demand}%</span>
+                <span style={{ fontWeight: '600', color: '#22d3ee' }}>{marketDemand}%</span>
               </div>
               <div style={{ height: '6px', background: 'rgba(255, 255, 255, 0.06)', borderRadius: '3px', overflow: 'hidden' }}>
-                <div style={{ width: `${viability.market_demand}%`, height: '100%', background: '#22d3ee', borderRadius: '3px' }} />
+                <div style={{ width: `${marketDemand}%`, height: '100%', background: '#22d3ee', borderRadius: '3px', transition: 'width 0.4s ease' }} />
               </div>
             </div>
 
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '4px' }}>
                 <span style={{ color: 'var(--text-secondary)' }}>Differentiation</span>
-                <span style={{ fontWeight: '600', color: '#818cf8' }}>{viability.differentiation_potential}%</span>
+                <span style={{ fontWeight: '600', color: '#818cf8' }}>{differentiation}%</span>
               </div>
               <div style={{ height: '6px', background: 'rgba(255, 255, 255, 0.06)', borderRadius: '3px', overflow: 'hidden' }}>
-                <div style={{ width: `${viability.differentiation_potential}%`, height: '100%', background: '#818cf8', borderRadius: '3px' }} />
+                <div style={{ width: `${differentiation}%`, height: '100%', background: '#818cf8', borderRadius: '3px', transition: 'width 0.4s ease' }} />
               </div>
             </div>
 
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '4px' }}>
                 <span style={{ color: 'var(--text-secondary)' }}>Tech Feasibility</span>
-                <span style={{ fontWeight: '600', color: '#34d399' }}>{viability.tech_feasibility}%</span>
+                <span style={{ fontWeight: '600', color: '#34d399' }}>{techFeasibility}%</span>
               </div>
               <div style={{ height: '6px', background: 'rgba(255, 255, 255, 0.06)', borderRadius: '3px', overflow: 'hidden' }}>
-                <div style={{ width: `${viability.tech_feasibility}%`, height: '100%', background: '#34d399', borderRadius: '3px' }} />
+                <div style={{ width: `${techFeasibility}%`, height: '100%', background: '#34d399', borderRadius: '3px', transition: 'width 0.4s ease' }} />
               </div>
             </div>
 
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '4px' }}>
                 <span style={{ color: 'var(--text-secondary)' }}>Market Saturation</span>
-                <span style={{ fontWeight: '600', color: '#fbbf24' }}>{viability.competitor_saturation}%</span>
+                <span style={{ fontWeight: '600', color: '#fbbf24' }}>{competitorSaturation}%</span>
               </div>
               <div style={{ height: '6px', background: 'rgba(255, 255, 255, 0.06)', borderRadius: '3px', overflow: 'hidden' }}>
-                <div style={{ width: `${viability.competitor_saturation}%`, height: '100%', background: '#fbbf24', borderRadius: '3px' }} />
+                <div style={{ width: `${competitorSaturation}%`, height: '100%', background: '#fbbf24', borderRadius: '3px', transition: 'width 0.4s ease' }} />
               </div>
             </div>
           </div>

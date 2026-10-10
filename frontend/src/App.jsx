@@ -87,6 +87,7 @@ export default function App() {
   const executeAnalysis = useCallback(async (ideaText, region, patents) => {
     setIsLoading(true);
     setError(null);
+    setReport(null);
 
     try {
       const response = await fetch(`${API_BASE}/api/analyze`, {
