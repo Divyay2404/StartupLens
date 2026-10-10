@@ -48,7 +48,7 @@ const FALLBACK_SAMPLES = [
 ];
 
 export default function App() {
-  const [idea, setIdea] = useState('AI attendance system for rural schools');
+  const [idea, setIdea] = useState('');
   const [targetRegion, setTargetRegion] = useState('Emerging Markets / Rural');
   const [includePatents, setIncludePatents] = useState(true);
   const [sampleIdeas, setSampleIdeas] = useState(FALLBACK_SAMPLES);
@@ -118,23 +118,6 @@ export default function App() {
     }
   }, [serpApiKey]);
 
-  // Run initial analysis automatically on mount so page loads with rich data!
-  useEffect(() => {
-    let ignore = false;
-    Promise.resolve().then(() => {
-      if (!ignore) {
-        executeAnalysis(
-          'AI attendance system for rural schools',
-          'Emerging Markets / Rural',
-          true
-        );
-      }
-    });
-
-    return () => {
-      ignore = true;
-    };
-  }, [executeAnalysis]);
 
   const handleSubmit = (e) => {
     if (e) e.preventDefault();
