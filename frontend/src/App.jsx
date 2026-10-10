@@ -83,10 +83,11 @@ export default function App() {
       .catch(() => {});
   }, [serpApiKey]);
 
-  // Execute Idea Analysis
+  
   const executeAnalysis = useCallback(async (ideaText, region, patents) => {
     setIsLoading(true);
     setError(null);
+    setReport(null);
 
     try {
       const response = await fetch(`${API_BASE}/api/analyze`, {
@@ -106,6 +107,7 @@ export default function App() {
 
       const data = await response.json();
       setReport(data);
+
       if (data.meta?.is_live_serpapi) {
         setIsLiveSerpApi(true);
       }
@@ -116,6 +118,7 @@ export default function App() {
       setIsLoading(false);
     }
   }, [serpApiKey]);
+
 
   // Run initial analysis automatically on mount so page loads with rich data!
   useEffect(() => {
