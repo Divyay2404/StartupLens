@@ -46,17 +46,8 @@ export default function Navbar({ isLiveSerpApi, onOpenSettings, onOpenPitch }) {
               }}>
                 Startup<span className="text-gradient-cyan">Lens</span>
               </span>
-              <span style={{
-                fontSize: '0.68rem',
-                fontFamily: 'var(--font-mono)',
-                padding: '2px 7px',
-                background: 'rgba(99, 102, 241, 0.2)',
-                color: '#a5b4fc',
-                borderRadius: '6px',
-                border: '1px solid rgba(99, 102, 241, 0.4)'
-              }}>
-                Track 5
-              </span>
+              
+              
             </div>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
               SerpApi Multi-Engine Opportunity Intelligence
