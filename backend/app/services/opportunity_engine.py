@@ -34,7 +34,7 @@ class OpportunityEngine:
                         "Pricing & Economics" if "Cost" in row.feature_name or "Afford" in row.feature_name else "Data Sovereignty & Trust"
                     )
                 )
-                
+
                 # Gather evidence source citations
                 evidence_sources = []
                 for comp in competitors[:2]:
@@ -53,7 +53,7 @@ class OpportunityEngine:
                 ))
 
         # 2. Formulate Core Opportunity Recommendation & Executive Summary
-        if "attendance" in idea_lower or "school" in idea_lower:
+        if ("attendance" in idea_lower or "roll call" in idea_lower) or ("school" in idea_lower and any(k in idea_lower for k in ["biometric", "facial", "card"])):
             core_opportunity = (
                 "Build an offline-first, edge-powered attendance terminal for low-connectivity rural schools. "
                 "By compressing facial recognition models to run on sub-$50 consumer tablets and queuing records "
@@ -65,7 +65,7 @@ class OpportunityEngine:
                 "that lightweight MobileNet models achieve 97%+ accuracy directly on microcontrollers. A massive whitespace "
                 "exists for a privacy-first, low-cost attendance system specifically optimized for rural and low-resource environments."
             )
-        elif "soil" in idea_lower or "farm" in idea_lower:
+        elif any(k in idea_lower for k in ["soil", "farm", "agri", "crop", "fertilizer"]):
             core_opportunity = (
                 "Develop an instant, smartphone-camera soil health scanner calibrated with standard reference cards. "
                 "By replacing $3,500 handheld spectrometers with on-device computer vision and delivering hyper-localized "
@@ -75,6 +75,26 @@ class OpportunityEngine:
                 "Incumbents either require expensive laboratory mail-in testing or costly spectroscopic hardware. "
                 "Recent academic literature proves RGB camera chromatic calibration can reliably approximate soil organic "
                 "matter. This enables a 100x cheaper per-test model tailored for underserved agricultural regions."
+            )
+        elif any(k in idea_lower for k in ["bakery", "surplus", "food waste", "restaurant", "grocery"]):
+            core_opportunity = (
+                f"Deploy a real-time micro-clearinghouse for {idea.strip()} that matches expiring bakery goods "
+                "with local buyers and shelters within 60 minutes of closing using automated dynamic markdown pricing."
+            )
+            summary = (
+                f"Existing food waste aggregators operate on slow multi-hour or scheduled batch intervals. "
+                "By focusing on rapid hyperlocal dispatch and tax-deductible shelter donation handoffs, "
+                "you capture high-perishability bakery surplus before it is thrown away."
+            )
+        elif any(k in idea_lower for k in ["health", "triage", "senior", "clinic", "telehealth", "patient"]):
+            core_opportunity = (
+                f"Create a telephone-compatible, vernacular dialect AI voice agent for {idea.strip()}. "
+                "Triages emergency symptoms over standard landlines without requiring smartphone literacy or broadband internet."
+            )
+            summary = (
+                "Current telehealth solutions demand high-speed video connections and complex smartphone apps. "
+                "A voice-native agent operating in local vernacular accents eliminates technological barriers "
+                "for rural seniors while dramatically cutting emergency room misrouting."
             )
         else:
             core_opportunity = (
@@ -88,20 +108,104 @@ class OpportunityEngine:
                 f"streamlined, privacy-conscious solutions tailored to underrepresented operational environments."
             )
 
-        # 3. Calculate Evidence-Based Viability Scorecard
-        market_demand = 82 if trend_signals and trend_signals[0].direction in ["Rising", "Surging"] else 70
-        competitor_saturation = 58  # Moderate to high saturation, but huge unaddressed gaps
-        differentiation_potential = 88 if len(gaps) >= 3 else 74
-        tech_feasibility = 84 if scholar_insights else 76
+        # 3. Calculate Evidence-Based Dynamic Viability Scorecard
 
-        # Formula: High differentiation and feasibility with unaddressed niche gives high overall score
+        # A. Market Demand (0 - 100%)
+        # Derived from Google Trends trajectory, timeline values, search volume, and news momentum
+        if trend_signals and trend_signals[0].timeline:
+            t_vals = [p.get("value", 50) for p in trend_signals[0].timeline if isinstance(p.get("value"), (int, float))]
+            avg_val = sum(t_vals) / len(t_vals) if t_vals else 50.0
+            latest_val = t_vals[-1] if t_vals else avg_val
+            trend_base = (avg_val * 0.4) + (latest_val * 0.6)
+        else:
+            trend_base = 52.0
+
+        dir_weight = {
+            "Surging": 14,
+            "Rising": 8,
+            "Stable": 0,
+            "Declining": -14
+        }.get(trend_signals[0].direction if trend_signals else "Stable", 0)
+
+        rel_queries_count = len(trend_signals[0].related_queries) if trend_signals else 0
+        query_depth_bonus = min(rel_queries_count * 2.5, 10)
+        news_momentum_bonus = min(len(news_items) * 2.0, 8)
+
+        market_demand = int(min(max(trend_base + dir_weight + query_depth_bonus + news_momentum_bonus, 20), 98))
+
+        # B. Market Saturation (0 - 100%)
+        # Derived from competitor density and incumbent capability coverage in the matrix
+        total_comp_ratings = 0
+        present_comp_ratings = 0.0
+        for row in matrix:
+            for r in row.competitor_ratings.values():
+                total_comp_ratings += 1
+                if r == "yes":
+                    present_comp_ratings += 1.0
+                elif r == "partial":
+                    present_comp_ratings += 0.5
+
+        coverage_ratio = (present_comp_ratings / total_comp_ratings) if total_comp_ratings > 0 else 0.45
+        comp_count = len(competitors)
+        comp_density = min(comp_count * 15, 60)
+        coverage_factor = coverage_ratio * 40
+
+        competitor_saturation = int(min(max(comp_density + coverage_factor, 18), 95))
+
+        # C. Differentiation Potential (0 - 100%)
+        # Derived from whitespace wins and critical gaps won in the capability matrix
+        native_wins = sum(1 for row in matrix if row.user_idea_rating in ["yes", "partial"] and any(r == "no" for r in row.competitor_ratings.values()))
+        critical_wins = sum(1 for row in matrix if row.importance == "Critical" and row.user_idea_rating in ["yes", "partial"])
+
+        gap_base = min(len(gaps) * 14, 48)
+        matrix_len = max(len(matrix), 1)
+        matrix_win_ratio = (native_wins / matrix_len) * 36
+        critical_bonus = min(critical_wins * 6, 16)
+
+        differentiation_potential = int(min(max(gap_base + matrix_win_ratio + critical_bonus, 25), 98))
+
+        # D. Technical Feasibility (0 - 100%)
+        # Derived from peer-reviewed academic citations, publication recency, and patent signals
+        scholar_count = len(scholar_insights)
+        total_citations = sum(s.citations or 0 for s in scholar_insights)
+        citation_factor = min(total_citations * 0.08, 22)
+
+        if scholar_count >= 3:
+            base_feasibility = 58
+        elif scholar_count >= 1:
+            base_feasibility = 46
+        else:
+            base_feasibility = 34
+
+        recent_papers = sum(1 for s in scholar_insights if any(yr in str(s.year) for yr in ["2023", "2024", "2025", "2026"]))
+        recency_factor = min(recent_papers * 5, 12)
+        patent_factor = min(len(patents) * 4, 10)
+
+        tech_feasibility = int(min(max(base_feasibility + citation_factor + recency_factor + patent_factor, 25), 96))
+
+        # Overall Composite Score
         overall_score = int(
-            (market_demand * 0.25) +
-            ((100 - competitor_saturation * 0.5) * 0.25) +
-            (differentiation_potential * 0.3) +
-            (tech_feasibility * 0.2)
+            (market_demand * 0.28) +
+            ((100 - competitor_saturation * 0.6) * 0.24) +
+            (differentiation_potential * 0.30) +
+            (tech_feasibility * 0.18)
         )
-        overall_score = min(max(overall_score, 65), 94)
+        overall_score = min(max(overall_score, 25), 98)
+
+        if overall_score >= 80:
+            verdict = "High Opportunity: Defensible Niche"
+        elif overall_score >= 65:
+            verdict = "Moderate Opportunity: Viable Wedge"
+        elif overall_score >= 50:
+            verdict = "Emerging Potential: High Execution Risk"
+        else:
+            verdict = "Challenging Opportunity: Dense Competition"
+
+        rationale = (
+            f"Evidence-backed assessment indicates {market_demand}% market demand momentum against {competitor_saturation}% incumbent saturation. "
+            f"Defensibility is driven by {differentiation_potential}% differentiation across {len(gaps)} discovered whitespace gaps, "
+            f"with {tech_feasibility}% technical feasibility validated by academic literature and patent signals."
+        )
 
         viability = ViabilityScore(
             overall=overall_score,
@@ -109,12 +213,8 @@ class OpportunityEngine:
             competitor_saturation=competitor_saturation,
             differentiation_potential=differentiation_potential,
             tech_feasibility=tech_feasibility,
-            verdict="High Opportunity: Defensible Niche",
-            rationale=(
-                f"While incumbent players dominate the generic enterprise space, their architectural assumptions "
-                f"(continuous cloud access, high willingness-to-pay) leave a large neglected customer segment. "
-                f"The technical feasibility is validated by recent research, providing a compelling opportunity window."
-            )
+            verdict=verdict,
+            rationale=rationale
         )
 
         # 4. Strategic 3-Stage Roadmap
