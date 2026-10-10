@@ -88,34 +88,100 @@ class OpportunityEngine:
                 f"streamlined, privacy-conscious solutions tailored to underrepresented operational environments."
             )
 
-        # 3. Calculate Evidence-Based Viability Scorecard
-        market_demand = 82 if trend_signals and trend_signals[0].direction in ["Rising", "Surging"] else 70
-        competitor_saturation = 58  # Moderate to high saturation, but huge unaddressed gaps
-        differentiation_potential = 88 if len(gaps) >= 3 else 74
-        tech_feasibility = 84 if scholar_insights else 76
+          # 3. Calculate Evidence-Based Viability Scorecard
 
-        # Formula: High differentiation and feasibility with unaddressed niche gives high overall score
-        overall_score = int(
-            (market_demand * 0.25) +
-            ((100 - competitor_saturation * 0.5) * 0.25) +
-            (differentiation_potential * 0.3) +
-            (tech_feasibility * 0.2)
-        )
-        overall_score = min(max(overall_score, 65), 94)
+          # Market demand: use trend direction and reported growth rate
+          market_demand = 65
+          if trend_signals:
+              direction = (trend_signals[0].direction or "").lower()
+              growth_text = trend_signals[0].growth_rate or "0%"
+              try:
+                  growth_rate = float(
+                      "".join(c for c in growth_text if c.isdigit() or c in ".-")
+                  )
+              except ValueError:
+                  growth_rate = 0
 
-        viability = ViabilityScore(
-            overall=overall_score,
-            market_demand=market_demand,
-            competitor_saturation=competitor_saturation,
-            differentiation_potential=differentiation_potential,
-            tech_feasibility=tech_feasibility,
-            verdict="High Opportunity: Defensible Niche",
-            rationale=(
-                f"While incumbent players dominate the generic enterprise space, their architectural assumptions "
-                f"(continuous cloud access, high willingness-to-pay) leave a large neglected customer segment. "
-                f"The technical feasibility is validated by recent research, providing a compelling opportunity window."
-            )
-        )
+              market_demand = 65
+              if direction == "rising":
+                  market_demand += 10
+              elif direction == "surging":
+                  market_demand += 20
+              elif direction in ["falling", "declining"]:
+                  market_demand -= 15
+
+              market_demand += max(-10, min(10, int(growth_rate / 5)))
+
+          market_demand = max(0, min(100, market_demand))
+
+          # Market saturation: more competitors means a more crowded market
+          competitor_count = len(competitors)
+          competitor_saturation = min(100, competitor_count * 12)
+
+          # Numerous unaddressed gaps can reduce the impact of competition
+          if gaps:
+              competitor_saturation -= min(20, len(gaps) * 4)
+
+          competitor_saturation = max(0, min(100, competitor_saturation))
+
+          # Differentiation: consider gaps and weaknesses found in competitor data
+          weakness_count = sum(len(comp.weaknesses) for comp in competitors)
+          differentiation_potential = 55 + min(25, len(gaps) * 5)
+          differentiation_potential += min(20, weakness_count * 2)
+          differentiation_potential = max(
+              0, min(100, differentiation_potential)
+          )
+
+          # Technical feasibility: research and implementation evidence
+          tech_feasibility = 55
+          if scholar_insights:
+              tech_feasibility += 15
+          if patents:
+              tech_feasibility += 5
+          if competitors:
+              tech_feasibility += 10
+          if not scholar_insights and not competitors:
+              tech_feasibility -= 10
+
+          tech_feasibility = max(0, min(100, tech_feasibility))
+
+          # Overall score: high saturation lowers the opportunity score
+          overall_score = int(
+              market_demand * 0.25
+              + (100 - competitor_saturation) * 0.25
+              + differentiation_potential * 0.30
+              + tech_feasibility * 0.20
+          )
+          overall_score = max(0, min(100, overall_score))
+
+          # Explain the score using the available evidence
+          verdict = (
+              "High Opportunity"
+              if overall_score >= 75
+              else "Promising Opportunity"
+              if overall_score >= 55
+              else "Needs Further Validation"
+          )
+
+          viability = ViabilityScore(
+              overall=overall_score,
+              market_demand=market_demand,
+              competitor_saturation=competitor_saturation,
+              differentiation_potential=differentiation_potential,
+              tech_feasibility=tech_feasibility,
+              verdict=verdict,
+              rationale=(
+                  f"Score based on market demand ({market_demand}/100), "
+                  f"competitor saturation ({competitor_saturation}/100), "
+                  f"differentiation potential ({differentiation_potential}/100), "
+                  f"and technical feasibility ({tech_feasibility}/100). "
+                  f"Evaluation used {len(competitors)} competitors, "
+                  f"{len(gaps)} identified opportunity gaps, "
+                  f"{len(scholar_insights)} research findings, and "
+                  f"{len(patents)} patent signals."
+              )
+          )
+
 
         # 4. Strategic 3-Stage Roadmap
         roadmap = [
