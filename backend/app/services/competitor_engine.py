@@ -144,10 +144,93 @@ class CompetitorEngine:
                 break
 
     @staticmethod
+    def _evaluate_user_capability(feature_name: str, idea_lower: str, category: str = "") -> str:
+        """
+        Evaluates whether the user's startup idea genuinely supports a capability.
+        Returns:
+            - 'yes' (Native): Explicit evidence or claims in the idea description.
+            - 'partial' (Partial): Partial context, related domain, or indirect support.
+            - 'unverified': Insufficient evidence or unstated capability (safe fallback).
+        """
+        f_lower = feature_name.lower()
+
+        # 1. Offline & Edge capabilities
+        if any(k in f_lower for k in ["offline", "edge"]):
+            if any(k in idea_lower for k in ["offline", "low-connectivity", "no internet", "no-connectivity", "off-grid", "mesh sync", "mesh"]):
+                return "yes"
+            if any(k in idea_lower for k in ["edge", "on-device", "local queue", "rural", "remote"]):
+                return "partial"
+            return "unverified"
+
+        # 2. Biometric & Data Privacy capabilities
+        if any(k in f_lower for k in ["privacy", "sovereignty", "local data"]):
+            if any(k in idea_lower for k in ["privacy", "on-device", "local storage", "sovereignty", "encrypted", "no cloud"]):
+                return "yes"
+            if any(k in idea_lower for k in ["facial", "biometric", "attendance", "sensitive"]):
+                return "partial"
+            return "unverified"
+
+        # 3. Hardware Cost & Affordability capabilities
+        if any(k in f_lower for k in ["hardware", "pricing", "cost", "affordable", "tier"]):
+            if any(k in idea_lower for k in ["affordable", "low cost", "low-cost", "budget", "sub-$", "inexpensive", "free", "$50", "$1", "cheap"]):
+                return "yes"
+            if any(k in idea_lower for k in ["rural", "smallholder", "micro", "underserved", "schools"]):
+                return "partial"
+            return "unverified"
+
+        # 4. Rural, Smallholder & Vertical Niche Focus
+        if any(k in f_lower for k in ["rural", "low-connectivity focus", "niche", "customization"]):
+            if any(k in idea_lower for k in ["rural", "remote", "village", "smallholder", "niche", "customized", "vertical", "surplus"]):
+                return "yes"
+            return "unverified"
+
+        # 5. Multilingual & Local Dialect UI
+        if any(k in f_lower for k in ["dialect", "multilingual", "language"]):
+            if any(k in idea_lower for k in ["dialect", "vernacular", "multilingual", "local language", "translation", "voice"]):
+                return "yes"
+            return "unverified"
+
+        # 6. Power Tolerance & Resilience
+        if any(k in f_lower for k in ["solar", "power", "electricity"]):
+            if any(k in idea_lower for k in ["solar", "intermittent power", "power cut", "battery", "low power", "electricity", "resilient"]):
+                return "yes"
+            return "unverified"
+
+        # 7. Optical / Camera Diagnostic
+        if any(k in f_lower for k in ["camera", "diagnostic", "optical", "smartphone"]):
+            if any(k in idea_lower for k in ["camera", "smartphone", "phone", "optical", "scanner", "scan"]):
+                return "yes"
+            if any(k in idea_lower for k in ["mobile", "app", "instant"]):
+                return "partial"
+            return "unverified"
+
+        # 8. Organic / Local Fertilizer Advice
+        if any(k in f_lower for k in ["fertilizer", "soil", "nutrient"]):
+            if any(k in idea_lower for k in ["fertilizer", "nutrient", "npk", "soil health", "soil"]):
+                return "yes"
+            return "unverified"
+
+        # 9. Lightweight / Frictionless Setup
+        if any(k in f_lower for k in ["friction", "setup", "lightweight"]):
+            if any(k in idea_lower for k in ["friction", "turnkey", "lightweight", "instant setup", "no install", "plug and play"]):
+                return "yes"
+            return "unverified"
+
+        # Generic heuristic fallback based on token overlap
+        tokens = [t for t in f_lower.replace("/", " ").replace("-", " ").split() if len(t) > 3 and t not in ["operation", "mode", "setup", "core", "focus"]]
+        matched_tokens = sum(1 for t in tokens if t in idea_lower)
+        if matched_tokens >= 2:
+            return "yes"
+        elif matched_tokens == 1:
+            return "partial"
+
+        return "unverified"
+
+    @staticmethod
     def _build_feature_matrix(idea_lower: str, competitors: List[CompetitorItem]) -> List[MatrixFeatureRow]:
         """
         Creates the Killer Feature Matrix: Feature vs Competitors vs User Idea
-        Values: 'yes' (✓), 'no' (✗), 'partial' (■)
+        Values: 'yes' (✓), 'no' (✗), 'partial' (■), 'unverified' (?)
         """
         comp_names = [c.name for c in competitors[:3]]
         
@@ -276,12 +359,18 @@ class CompetitorEngine:
                     c_rating = "no" if idx == 0 else ("partial" if idx == 1 else "no")
                 ratings[c.name] = c_rating
 
+            user_rating = CompetitorEngine._evaluate_user_capability(
+                feature_name=f["name"],
+                idea_lower=idea_lower,
+                category=f.get("category", "")
+            )
+
             rows.append(MatrixFeatureRow(
                 feature_name=f["name"],
                 category=f["category"],
                 importance=f["importance"],
                 competitor_ratings=ratings,
-                user_idea_rating="yes",
+                user_idea_rating=user_rating,
                 opportunity_reason=f["reason"]
             ))
 

@@ -42,7 +42,7 @@ class MatrixFeatureRow(BaseModel):
     category: str = "Core Capability"
     importance: str = "High"  # "Critical", "High", "Medium"
     competitor_ratings: Dict[str, str] = {}  # "yes" (✓), "no" (✗), "partial" (■)
-    user_idea_rating: str = "yes"  # "yes" (✓)
+    user_idea_rating: str = "unverified"  # "yes" (Native), "partial" (Partial), "no" (Unsupported), "unverified" (Unverified)
     opportunity_reason: str
 
 class OpportunityGap(BaseModel):
