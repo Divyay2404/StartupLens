@@ -175,7 +175,7 @@ export default function IdeaForm({
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
           <Lightbulb size={16} color="var(--accent-amber)" />
           <span style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            Instant 1-Click Hackathon Scenarios:
+            Explore Startup Ideas:
           </span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '12px' }}>
