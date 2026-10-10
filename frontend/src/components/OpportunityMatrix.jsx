@@ -31,10 +31,51 @@ export default function OpportunityMatrix({ matrix, competitors, userIdeaTitle }
         </span>
       );
     }
+    if (v === 'no') {
+      return (
+        <span className="status-pill status-no" title="Missing / Not Supported">
+          <X size={16} strokeWidth={3} />
+        </span>
+      );
+    }
     return (
-      <span className="status-pill status-no" title="Missing / Not Supported">
+      <span className="status-pill status-no" style={{ opacity: 0.65 }} title="Unverified / Insufficient Evidence">
         <X size={16} strokeWidth={3} />
       </span>
+    );
+  };
+
+  const renderUserCapabilityCell = (rating) => {
+    const v = (rating || '').toLowerCase();
+    if (v === 'yes') {
+      return (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+          {renderBadge('yes')}
+          <span style={{ fontSize: '0.78rem', color: '#34d399', fontWeight: '700' }}>Native</span>
+        </div>
+      );
+    }
+    if (v === 'partial') {
+      return (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+          {renderBadge('partial')}
+          <span style={{ fontSize: '0.78rem', color: '#fbbf24', fontWeight: '700' }}>Partial</span>
+        </div>
+      );
+    }
+    if (v === 'no') {
+      return (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+          {renderBadge('no')}
+          <span style={{ fontSize: '0.78rem', color: '#fb7185', fontWeight: '700' }}>Unsupported</span>
+        </div>
+      );
+    }
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+        {renderBadge('unverified')}
+        <span style={{ fontSize: '0.78rem', color: '#94a3b8', fontWeight: '700' }}>Unverified</span>
+      </div>
     );
   };
 
@@ -82,7 +123,7 @@ export default function OpportunityMatrix({ matrix, competitors, userIdeaTitle }
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span className="status-pill status-yes" style={{ width: '20px', height: '20px' }}><Check size={12} /></span>
-            <span style={{ color: '#34d399' }}>Full Capability</span>
+            <span style={{ color: '#34d399' }}>Full Capability / Native</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span className="status-pill status-partial" style={{ width: '20px', height: '20px' }}><Minus size={12} /></span>
@@ -90,7 +131,7 @@ export default function OpportunityMatrix({ matrix, competitors, userIdeaTitle }
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span className="status-pill status-no" style={{ width: '20px', height: '20px' }}><X size={12} /></span>
-            <span style={{ color: '#fb7185' }}>Missing (Opportunity)</span>
+            <span style={{ color: '#fb7185' }}>Missing / Unverified</span>
           </div>
         </div>
       </div>
@@ -200,10 +241,7 @@ export default function OpportunityMatrix({ matrix, competitors, userIdeaTitle }
 
                     {/* User Idea Rating */}
                     <td className="matrix-col-user" style={{ textAlign: 'center' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                        {renderBadge(row.user_idea_rating)}
-                        <span style={{ fontSize: '0.78rem', color: '#34d399', fontWeight: '700' }}>Native</span>
-                      </div>
+                      {renderUserCapabilityCell(row.user_idea_rating)}
                     </td>
                   </tr>
 

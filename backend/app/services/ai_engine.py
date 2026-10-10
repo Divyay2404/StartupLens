@@ -46,7 +46,8 @@ class AIEngine:
         competitor_analysis = CompetitorEngine.extract_competitors_and_matrix(
             idea=idea,
             evidence_items=evidence_items,
-            domain=research_plan.core_domain
+            domain=research_plan.core_domain,
+            target_users=research_plan.target_users
         )
         competitors = competitor_analysis["competitors"]
         matrix = competitor_analysis["matrix"]
