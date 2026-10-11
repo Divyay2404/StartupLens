@@ -10,7 +10,7 @@ import SettingsModal from './components/SettingsModal';
 import PitchModal from './components/PitchModal';
 import { AlertCircle } from 'lucide-react';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+const API_BASE = import.meta.env.VITE_API_URL ?? '';
 
 const FALLBACK_SAMPLES = [
   {
@@ -113,7 +113,7 @@ export default function App() {
       }
     } catch (err) {
       console.error("Analysis request failed:", err);
-      setError("Unable to connect to backend server. Ensure backend is running at http://127.0.0.1:8000");
+      setError("Unable to connect to the backend. If running locally, ensure the backend is running and VITE_API_URL is set correctly.");
     } finally {
       setIsLoading(false);
     }
