@@ -1,7 +1,7 @@
 import React from 'react';
-import { Telescope, Key, FileText, Zap } from 'lucide-react';
+import { Telescope, Zap } from 'lucide-react';
 
-export default function Navbar({ isLiveSerpApi, onOpenSettings, onOpenPitch }) {
+export default function Navbar({ isLiveSerpApi }) {
   return (
     <header style={{
       borderBottom: '1px solid var(--border-subtle)',
@@ -46,8 +46,6 @@ export default function Navbar({ isLiveSerpApi, onOpenSettings, onOpenPitch }) {
               }}>
                 Startup<span className="text-gradient-cyan">Lens</span>
               </span>
-              
-              
             </div>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
               SerpApi Multi-Engine Opportunity Intelligence
@@ -55,7 +53,7 @@ export default function Navbar({ isLiveSerpApi, onOpenSettings, onOpenPitch }) {
           </div>
         </div>
 
-        {/* Status Pill & Action Buttons */}
+        {/* Status Pill */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {isLiveSerpApi ? (
             <div className="badge badge-live" title="Connected to SerpApi Live Search Engine">
@@ -63,29 +61,11 @@ export default function Navbar({ isLiveSerpApi, onOpenSettings, onOpenPitch }) {
               Live SerpApi Connected
             </div>
           ) : (
-            <div className="badge badge-demo" title="Operating with built-in realistic intelligence datasets. Add SerpApi key in Settings.">
+            <div className="badge badge-demo" title="Operating with built-in realistic intelligence datasets.">
               <Zap size={13} />
               Demo / High-Fidelity Mode
             </div>
           )}
-
-          <button
-            onClick={onOpenSettings}
-            className="btn-secondary"
-            title="Configure SerpApi and LLM API Keys"
-          >
-            <Key size={15} />
-            <span>API Keys</span>
-          </button>
-
-          <button
-            onClick={onOpenPitch}
-            className="btn-secondary"
-            title="View Hackathon Track 5 pitch & architecture"
-          >
-            <FileText size={15} />
-            <span>Judge Pitch</span>
-          </button>
         </div>
       </div>
     </header>

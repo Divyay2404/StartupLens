@@ -9,6 +9,7 @@ export default function IdeaForm({
   includePatents,
   setIncludePatents,
   sampleIdeas,
+  selectedIdeaId,
   onSelectSample,
   onSubmit,
   isLoading
@@ -179,52 +180,43 @@ export default function IdeaForm({
           </span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '12px' }}>
-          {sampleIdeas.map((sample) => (
-            <div
-              key={sample.id}
-              onClick={() => onSelectSample(sample)}
-              style={{
-                background: sample.id === 'rural_attendance' ? 'rgba(99, 102, 241, 0.08)' : 'rgba(255, 255, 255, 0.03)',
-                border: sample.id === 'rural_attendance' ? '1px solid rgba(99, 102, 241, 0.35)' : '1px solid var(--border-subtle)',
-                borderRadius: 'var(--radius-md)',
-                padding: '12px 16px',
-                cursor: 'pointer',
-                transition: 'all var(--transition-fast)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.borderColor = 'var(--accent-primary)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'none';
-                e.currentTarget.style.borderColor = sample.id === 'rural_attendance' ? 'rgba(99, 102, 241, 0.35)' : 'var(--border-subtle)';
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                <span style={{ fontSize: '0.72rem', color: 'var(--accent-cyan)', fontWeight: '600' }}>
-                  {sample.tag}
-                </span>
-                {sample.highlight && (
-                  <span style={{
-                    fontSize: '0.65rem',
-                    background: 'rgba(245, 158, 11, 0.15)',
-                    color: '#fbbf24',
-                    padding: '2px 6px',
-                    borderRadius: '4px',
-                    fontWeight: '600'
-                  }}>
-                    {sample.highlight}
+          {sampleIdeas.map((sample) => {
+            const isSelected = sample.id === selectedIdeaId;
+            return (
+              <div
+                key={sample.id}
+                onClick={() => onSelectSample(sample)}
+                style={{
+                  background: isSelected ? 'rgba(99, 102, 241, 0.08)' : 'rgba(255, 255, 255, 0.03)',
+                  border: isSelected ? '1px solid rgba(99, 102, 241, 0.35)' : '1px solid var(--border-subtle)',
+                  borderRadius: 'var(--radius-md)',
+                  padding: '12px 16px',
+                  cursor: 'pointer',
+                  transition: 'all var(--transition-fast)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.borderColor = 'var(--accent-primary)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'none';
+                  e.currentTarget.style.borderColor = isSelected ? 'rgba(99, 102, 241, 0.35)' : 'var(--border-subtle)';
+                }}
+              >
+                <div style={{ marginBottom: '4px' }}>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--accent-cyan)', fontWeight: '600' }}>
+                    {sample.tag}
                   </span>
-                )}
+                </div>
+                <div style={{ fontSize: '0.92rem', fontWeight: '600', color: '#ffffff', marginBottom: '4px' }}>
+                  {sample.title}
+                </div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
+                  {sample.description.slice(0, 85)}...
+                </div>
               </div>
-              <div style={{ fontSize: '0.92rem', fontWeight: '600', color: '#ffffff', marginBottom: '4px' }}>
-                {sample.title}
-              </div>
-              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
-                {sample.description.slice(0, 85)}...
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

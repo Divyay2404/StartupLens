@@ -61,6 +61,7 @@ export default function App() {
   const [serpApiKey, setSerpApiKey] = useState(() => localStorage.getItem('STARTUPLENS_SERPAPI_KEY') || '');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isPitchOpen, setIsPitchOpen] = useState(false);
+  const [selectedIdeaId, setSelectedIdeaId] = useState(null);
 
   // Initial health check and load sample ideas
   useEffect(() => {
@@ -128,6 +129,7 @@ export default function App() {
   const handleSelectSample = (sample) => {
     setIdea(sample.description || sample.title);
     setTargetRegion(sample.target_region || 'Global');
+    setSelectedIdeaId(sample.id);
     executeAnalysis(sample.description || sample.title, sample.target_region || 'Global', includePatents);
   };
 
@@ -136,8 +138,6 @@ export default function App() {
       {/* Navigation */}
       <Navbar
         isLiveSerpApi={isLiveSerpApi}
-        onOpenSettings={() => setIsSettingsOpen(true)}
-        onOpenPitch={() => setIsPitchOpen(true)}
       />
 
       {/* Main Container */}
@@ -172,6 +172,7 @@ export default function App() {
           includePatents={includePatents}
           setIncludePatents={setIncludePatents}
           sampleIdeas={sampleIdeas}
+          selectedIdeaId={selectedIdeaId}
           onSelectSample={handleSelectSample}
           onSubmit={handleSubmit}
           isLoading={isLoading}
