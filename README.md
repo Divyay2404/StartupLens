@@ -121,12 +121,11 @@ Open your browser at: **`http://localhost:5173`**
 
 ---
 
-## 🎙️ Recommended Judge Pitch
 
-> *“StartupLens is an evidence intelligence platform that transforms a startup idea into a structured opportunity assessment. It triangulates the idea across existing products, academic research, current news and market-interest signals using SerpApi, then uses AI to identify competitor gaps and recommend how the idea could be differentiated.”*
+StartupLens is an evidence intelligence platform that transforms a startup idea into a structured opportunity assessment. It triangulates the idea across existing products, academic research, current news and market-interest signals using SerpApi, then uses AI to identify competitor gaps and recommend how the idea could be differentiated.
 
-**Closing line:**  
-> *“We don't just ask whether an idea already exists. We investigate what exists, what's changing, what people are researching and where the gaps are—then turn those signals into a potential opportunity.”*
+
+We don't just ask whether an idea already exists. We investigate what exists, what's changing, what people are researching and where the gaps are—then turn those signals into a potential opportunity.
 
 ---
 
